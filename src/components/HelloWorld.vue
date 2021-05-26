@@ -1,4 +1,5 @@
 <template>
+  <el-button type="primary">查询</el-button>
   <h1>{{ msg }}</h1>
 
   <p>
