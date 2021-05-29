@@ -1,55 +1,61 @@
 <template>
-  <el-button type="primary">查询</el-button>
-  <h1>{{ msg }}</h1>
-
-  <p>
-    Recommended IDE setup:
-    <a href="https://code.visualstudio.com/" target="_blank">VSCode</a>
-    +
-    <a
-      href="https://marketplace.visualstudio.com/items?itemName=octref.vetur"
-      target="_blank"
-    >
-      Vetur
-    </a>
-    or
-    <a href="https://github.com/johnsoncodehk/volar" target="_blank">Volar</a>
-    (if using
-    <code>&lt;script setup&gt;</code>)
-  </p>
-
-  <p>See <code>README.md</code> for more information.</p>
-
-  <p>
-    <a href="https://vitejs.dev/guide/features.html" target="_blank">
-      Vite Docs
-    </a>
-    |
-    <a href="https://v3.vuejs.org/" target="_blank">Vue 3 Docs</a>
-  </p>
-
-  <button @click="count++">count is: {{ count }}</button>
-  <p>
-    Edit
-    <code>components/HelloWorld.vue</code> to test hot module replacement.
-  </p>
+  <p>{{ test }}</p>
+  <p>{{ doubleTest }}</p>
+  <p ref="desc"></p>
+  <!-- 模态窗口 teleport -->
+  <model-button></model-button>
+  <!-- emits选项 -->
+  <emits @click="onClick"></emits>
 </template>
 
 <script lang="ts">
-import { ref, defineComponent } from "vue";
+import {
+  ref,
+  defineComponent,
+  reactive,
+  computed,
+  onMounted,
+  onUnmounted,
+  toRefs,
+} from "vue";
+import ModelButton from "./modelButton.vue";
+import emits from "./emits.vue";
 export default defineComponent({
   name: "HelloWorld",
-  props: {
-    msg: {
-      type: String,
-      required: true,
-    },
+  components: {
+    ModelButton,
+    emits,
   },
   setup: () => {
-    const count = ref(0);
-    return { count };
+    // counter相关
+    const { test, doubleTest } = useCounter();
+    // 使用元素引用
+    const desc = ref(null);
+    return { test, doubleTest, desc };
+  },
+  methods: {
+    onClick() {
+      console.log("clickme");
+    },
   },
 });
+
+function useCounter() {
+  const data: any = reactive({
+    test: 1,
+    doubleTest: computed(() => data.test * 2),
+  });
+  let timer: any;
+  onMounted(() => {
+    timer = setInterval(() => {
+      data.test++;
+    }, 1000);
+  });
+  onUnmounted(() => {
+    clearInterval(timer);
+  });
+  return toRefs(data);
+}
 </script>
 
 <style scoped>
